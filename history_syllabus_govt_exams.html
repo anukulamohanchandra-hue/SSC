@@ -1,0 +1,470 @@
+
+<style>
+  :root { --gap: 12px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+
+  .wrap { padding: 1.5rem 1rem 2rem; max-width: 680px; }
+
+  .era-block { margin-bottom: 1.75rem; border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-tertiary); overflow: hidden; background: var(--color-background-primary); }
+
+  .era-header { display: flex; align-items: center; gap: 12px; padding: 0.85rem 1.1rem; cursor: pointer; user-select: none; }
+  .era-header:hover { background: var(--color-background-secondary); }
+
+  .era-badge { display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 99px; white-space: nowrap; flex-shrink: 0; }
+
+  .era-title { font-size: 15px; font-weight: 500; color: var(--color-text-primary); flex: 1; }
+  .era-years { font-size: 12px; color: var(--color-text-secondary); flex-shrink: 0; }
+  .chevron { font-size: 16px; color: var(--color-text-secondary); transition: transform 0.2s; flex-shrink: 0; }
+  .era-header.open .chevron { transform: rotate(180deg); }
+
+  .era-body { display: none; border-top: 0.5px solid var(--color-border-tertiary); }
+  .era-body.open { display: block; }
+
+  .unit { padding: 0.85rem 1.1rem; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .unit:last-child { border-bottom: none; }
+
+  .unit-num { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .unit-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 8px; }
+
+  .topics { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+  .topics li { display: flex; gap: 8px; font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; }
+  .topics li::before { content: "–"; flex-shrink: 0; color: var(--color-text-secondary); margin-top: 1px; }
+
+  .tag { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 2px 7px; border-radius: 99px; margin-top: 6px; flex-shrink: 0; }
+
+  .tag-hot { background: #FAECE7; color: #993C1D; }
+  .tag-key { background: #E6F1FB; color: #185FA5; }
+  .tag-geo { background: #EAF3DE; color: #3B6D11; }
+  .tag-fig { background: #EEEDFE; color: #534AB7; }
+
+  @media (prefers-color-scheme: dark) {
+    .tag-hot { background: #4A1B0C; color: #F0997B; }
+    .tag-key { background: #042C53; color: #85B7EB; }
+    .tag-geo { background: #173404; color: #97C459; }
+    .tag-fig { background: #26215C; color: #AFA9EC; }
+  }
+
+  .badge-ancient { background: #EAF3DE; color: #3B6D11; }
+  .badge-medieval { background: #FAEEDA; color: #854F0B; }
+  .badge-modern { background: #E6F1FB; color: #185FA5; }
+  .badge-world { background: #EEEDFE; color: #534AB7; }
+  @media (prefers-color-scheme: dark) {
+    .badge-ancient { background: #173404; color: #97C459; }
+    .badge-medieval { background: #412402; color: #EF9F27; }
+    .badge-modern { background: #042C53; color: #85B7EB; }
+    .badge-world { background: #26215C; color: #AFA9EC; }
+  }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.25rem; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--color-text-secondary); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  .progress-bar { height: 3px; background: var(--color-border-tertiary); border-radius: 99px; margin-bottom: 1.5rem; overflow: hidden; }
+  .progress-fill { height: 100%; background: #378ADD; border-radius: 99px; transition: width 0.4s; }
+
+  .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+  .top-label { font-size: 13px; color: var(--color-text-secondary); }
+  .top-count { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+
+  .expand-all { font-size: 12px; color: var(--color-text-secondary); background: none; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 4px 10px; cursor: pointer; }
+  .expand-all:hover { background: var(--color-background-secondary); }
+</style>
+
+<div class="wrap">
+  <h2 class="sr-only">History syllabus for government exams — SSC CGL, Banks, RRB</h2>
+
+  <div class="top-bar">
+    <div>
+      <div style="font-size:18px;font-weight:500;color:var(--color-text-primary);margin-bottom:3px;">History — Exam Syllabus</div>
+      <div class="top-label">SSC CGL · Bank PO · RRB · UPSC Prelims</div>
+    </div>
+    <button class="expand-all" onclick="toggleAll()">Expand all</button>
+  </div>
+
+  <div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%"></div></div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#639922"></div> Ancient India</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#BA7517"></div> Medieval India</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#378ADD"></div> Modern India</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#7F77DD"></div> World History</div>
+  </div>
+
+  <div id="syllabus"></div>
+</div>
+
+<script>
+const data = [
+  {
+    era: "Ancient India",
+    badge: "badge-ancient",
+    years: "3000 BCE – 600 CE",
+    units: [
+      {
+        num: "Unit 1",
+        title: "Prehistoric India & the Indus Valley Civilisation",
+        tags: ["hot","geo"],
+        topics: [
+          "Stone Age to Chalcolithic — tool types, major site locations (Bhimbetka, Mehrgarh)",
+          "Indus Valley: Harappa & Mohenjo-Daro — town planning, drainage, trade networks",
+          "Key geographic stretch: Sindh, Punjab, Gujarat (Lothal, Dholavira, Kalibangan)",
+          "Decline theories — flood, Aryan invasion, climate shift (exam favourite)"
+        ]
+      },
+      {
+        num: "Unit 2",
+        title: "Vedic Age & Rise of Mahajanapadas",
+        tags: ["key","fig"],
+        topics: [
+          "Early Vedic (Rigveda era) vs Later Vedic — social shifts, varnas, geography of settlement",
+          "16 Mahajanapadas — location, significance of Magadha, Kosala, Vajji (republic model)",
+          "Rise of Magadha: Bimbisara, Ajatashatru — early statecraft and expansion",
+          "Emergence of Buddhism & Jainism — Gautama Buddha, Mahavira, core tenets, important councils"
+        ]
+      },
+      {
+        num: "Unit 3",
+        title: "Maurya Empire — India's First Pan-Indian Power",
+        tags: ["hot","fig"],
+        topics: [
+          "Chandragupta Maurya — Chanakya (Arthashastra), defeat of Nanda dynasty, Seleucid treaty",
+          "Bindusara — southern expansion, Greek ambassador Deimachus",
+          "Ashoka the Great — Kalinga War (261 BCE), Dhamma, rock & pillar edicts, spread of Buddhism",
+          "Administrative genius: provinces, spies (Gupta network), economy",
+          "Post-Mauryan fragmentation — Sungas, Kanvas, Satavahanas"
+        ]
+      },
+      {
+        num: "Unit 4",
+        title: "Sangam Age, Foreign Invasions & Indo-Greek Contact",
+        tags: ["geo","key"],
+        topics: [
+          "Sangam literature — Tamil kingdoms (Cheras, Cholas, Pandyas), trade with Rome",
+          "Indo-Greek rulers — Menander (Milinda), Gandhara art fusion",
+          "Kushana Empire — Kanishka I, 4th Buddhist Council, Silk Route control",
+          "Satavahanas — Deccan link, Prakrit inscriptions, trade guilds"
+        ]
+      },
+      {
+        num: "Unit 5",
+        title: "Gupta Empire — The Golden Age",
+        tags: ["hot","fig"],
+        topics: [
+          "Chandragupta I → Samudragupta (Allahabad Pillar, military genius) → Chandragupta II (Vikramaditya)",
+          "Science & arts: Aryabhata (zero, π), Kalidasa, Varahamihira, Nalanda University",
+          "Administration: decentralised, land grants, trade flourishing",
+          "Decline: White Hun (Huna) invasions, internal fragmentation"
+        ]
+      }
+    ]
+  },
+  {
+    era: "Medieval India",
+    badge: "badge-medieval",
+    years: "600 CE – 1757 CE",
+    units: [
+      {
+        num: "Unit 6",
+        title: "Post-Gupta Kingdoms & Harsha's Empire",
+        tags: ["fig","geo"],
+        topics: [
+          "Harshavardhana (606–647 CE) — Thanesar, Kanauj, Chinese traveller Xuanzang's account",
+          "Chalukyas of Badami, Pallavas of Kanchipuram — Deccan power struggle",
+          "Rashtrakutas, Eastern Chalukyas — cultural patronage, cave temples (Ellora, Ajanta completion)"
+        ]
+      },
+      {
+        num: "Unit 7",
+        title: "Arab Invasion & Rajput Age",
+        tags: ["key","hot"],
+        topics: [
+          "Muhammad bin Qasim (711 CE) — conquest of Sindh, first Islamic footprint in India",
+          "Major Rajput clans — Pratiharas, Paramaras, Chahamanas (Prithviraj Chauhan)",
+          "First & Second Battle of Tarain (1191, 1192) — Muhammad of Ghor vs Prithviraj — turning point",
+          "Rajput feudalism, chivalry culture, temple-building spree"
+        ]
+      },
+      {
+        num: "Unit 8",
+        title: "Delhi Sultanate — Five Dynasties (1206–1526)",
+        tags: ["hot","fig"],
+        topics: [
+          "Slave Dynasty: Qutb-ud-din Aibak (Qutb Minar), Iltutmish, Razia Sultana — first woman ruler",
+          "Khilji Dynasty: Alauddin Khilji — market reforms, Mongol repulsion, southern campaigns (Malik Kafur)",
+          "Tughlaq Dynasty: Muhammad bin Tughlaq (shifting capital to Daulatabad), Firuz Shah Tughlaq — reforms",
+          "Sayyid & Lodi Dynasties — decline, Ibrahim Lodi defeated at First Battle of Panipat (1526)",
+          "Ibn Battuta & Moroccan accounts of Sultanate India"
+        ]
+      },
+      {
+        num: "Unit 9",
+        title: "Vijayanagara, Bahmani & Regional Kingdoms",
+        tags: ["geo","key"],
+        topics: [
+          "Vijayanagara Empire (1336–1565) — Harihara & Bukka, Krishnadevaraya (peak glory), Hampi",
+          "Bahmani Sultanate — Deccan counterpower, Mahmud Gawan's administration",
+          "Battle of Talikota (1565) — fall of Vijayanagara",
+          "Bengal Sultanate, Malwa, Mewar (Rana Sanga) — regional power map"
+        ]
+      },
+      {
+        num: "Unit 10",
+        title: "Bhakti & Sufi Movements — India's Social Revolution",
+        tags: ["fig","key"],
+        topics: [
+          "Bhakti saints: Kabir (Hindu-Muslim synthesis), Mirabai, Tukaram, Chaitanya Mahaprabhu, Ramananda",
+          "Sufi orders: Chishti (Moinuddin Chishti, Nizamuddin Auliya), Suhrawardi, Qadiri",
+          "Impact: social reform, caste critique, regional languages (Hindi, Marathi, Bengali) elevated",
+          "Link to later freedom thought — always asked in exams"
+        ]
+      },
+      {
+        num: "Unit 11",
+        title: "Mughal Empire — Height of Islamic Rule in India",
+        tags: ["hot","fig"],
+        topics: [
+          "Babur (1526–30) — Panipat I, Khanwa, gunpowder advantage, Baburnama",
+          "Humayun — exile in Persia, Sher Shah Suri interlude (Grand Trunk Road, rupee coinage)",
+          "Akbar the Great (1556–1605) — Panipat II, Din-i-Ilahi, Navratnas, Mansabdari, land revenue (Todar Mal)",
+          "Jahangir, Shah Jahan — Taj Mahal, Mughal painting, Nurjahan's political influence",
+          "Aurangzeb — Deccan wars, Jizya re-imposition, decline seeds; Shivaji's resistance",
+          "Later Mughals — Nadir Shah invasion (1739), Peacock Throne looted"
+        ]
+      },
+      {
+        num: "Unit 12",
+        title: "Maratha Empire & Regional Powers",
+        tags: ["hot","geo"],
+        topics: [
+          "Shivaji Maharaj — guerrilla warfare, Swaraj, Ashtapradhan council, naval force",
+          "Peshwa era: Baji Rao I (peak Maratha expansion), Battle of Palkhed",
+          "Third Battle of Panipat (1761) — Marathas vs Ahmad Shah Abdali, decisive blow",
+          "Sikhs: Guru Nanak → Guru Gobind Singh (Khalsa), Banda Singh Bahadur, rise of Sikh Misls"
+        ]
+      }
+    ]
+  },
+  {
+    era: "Modern India",
+    badge: "badge-modern",
+    years: "1600 CE – 1947 CE",
+    units: [
+      {
+        num: "Unit 13",
+        title: "European Entry & British East India Company",
+        tags: ["key","geo"],
+        topics: [
+          "Vasco da Gama (1498) — sea route to India, Portuguese dominance (Goa)",
+          "Dutch, French, British East India Companies — trade to territorial control",
+          "Battle of Plassey (1757) — Clive vs Siraj ud-Daulah, dawn of British rule",
+          "Battle of Buxar (1764) — consolidated British supremacy, Diwani rights"
+        ]
+      },
+      {
+        num: "Unit 14",
+        title: "British Expansion & Major Wars",
+        tags: ["hot","geo"],
+        topics: [
+          "Subsidiary Alliance (Wellesley) & Doctrine of Lapse (Dalhousie) — annexation tools",
+          "Anglo-Mysore Wars (Hyder Ali, Tipu Sultan), Anglo-Maratha Wars, Anglo-Sikh Wars",
+          "Ryotwari, Zamindari & Mahalwari — land revenue systems and their impact on peasants",
+          "Economic drain theory — Dadabhai Naoroji's 'Poverty and Un-British Rule'"
+        ]
+      },
+      {
+        num: "Unit 15",
+        title: "1857 — The First War of Independence",
+        tags: ["hot","fig"],
+        topics: [
+          "Causes: Enfield cartridge, annexations, social interference (widow remarriage, Sati ban)",
+          "Key figures: Mangal Pandey, Rani Lakshmibai, Tantia Tope, Bahadur Shah Zafar",
+          "Geographic spread: Meerut, Delhi, Lucknow, Jhansi, Kanpur",
+          "Aftermath: Company rule ended, Crown takes over (Queen's Proclamation 1858)"
+        ]
+      },
+      {
+        num: "Unit 16",
+        title: "Social & Religious Reform Movements",
+        tags: ["fig","key"],
+        topics: [
+          "Raja Ram Mohan Roy — Brahmo Samaj, abolition of Sati (1829), 'Father of Modern India'",
+          "Dayananda Saraswati — Arya Samaj, Shuddhi movement, 'Back to the Vedas'",
+          "Swami Vivekananda — Ramakrishna Mission, Chicago address (1893), neo-Vedanta",
+          "Jyotiba Phule, B.R. Ambedkar — caste reform, Mahad Satyagraha",
+          "Sir Syed Ahmad Khan — Aligarh Movement, scientific temper among Muslims"
+        ]
+      },
+      {
+        num: "Unit 17",
+        title: "Indian National Congress & Early Nationalism",
+        tags: ["hot","fig"],
+        topics: [
+          "INC founded 1885 — A.O. Hume, Dadabhai Naoroji, Pherozeshah Mehta",
+          "Moderates vs Extremists — Gopal Krishna Gokhale vs Bal Gangadhar Tilak",
+          "Partition of Bengal (1905) — Swadeshi Movement, Boycott, rise of mass nationalism",
+          "Morley-Minto Reforms (1909) — separate electorates introduced (communal seed)"
+        ]
+      },
+      {
+        num: "Unit 18",
+        title: "Gandhi Era & Mass Movements (1915–1942)",
+        tags: ["hot","fig"],
+        topics: [
+          "Gandhi's return (1915) — Champaran, Kheda, Ahmedabad mill (early satyagrahas)",
+          "Non-Cooperation Movement (1920–22) — Khilafat alliance, Chauri Chaura withdrawal",
+          "Simon Commission (1928) boycott — 'Go Back Simon', Lala Lajpat Rai",
+          "Civil Disobedience Movement (1930) — Dandi March (Salt Satyagraha), Gandhi-Irwin Pact",
+          "Round Table Conferences — Ambedkar, separate electorates debate, Poona Pact (1932)",
+          "Quit India Movement (1942) — 'Do or Die', underground leaders, repression"
+        ]
+      },
+      {
+        num: "Unit 19",
+        title: "Revolutionary Nationalism & Underground Struggle",
+        tags: ["fig","key"],
+        topics: [
+          "Bal Gangadhar Tilak — Swaraj is my birthright, Home Rule League",
+          "Bhagat Singh, Sukhdev, Rajguru — HSRA, Assembly bomb (1929), martyrdom (1931)",
+          "Subhas Chandra Bose — INA (Azad Hind Fauj), Singapore declaration, 'Jai Hind'",
+          "Aurobindo Ghosh — Alipore bomb case, transition to spiritual nationalism"
+        ]
+      },
+      {
+        num: "Unit 20",
+        title: "Partition, Independence & Constitutional Birth",
+        tags: ["hot","key"],
+        topics: [
+          "Cabinet Mission Plan (1946), Mountbatten Plan (June 1947)",
+          "Indian Independence Act — 14/15 August 1947, two-nation reality",
+          "Partition violence, refugee crisis — Punjab & Bengal divide",
+          "Constituent Assembly — Dr. B.R. Ambedkar (chairman, drafting committee), key debates",
+          "Constitution adopted 26 Nov 1949, enforced 26 Jan 1950"
+        ]
+      }
+    ]
+  },
+  {
+    era: "World History (Exam-Relevant)",
+    badge: "badge-world",
+    years: "1688 CE – 1945 CE",
+    units: [
+      {
+        num: "Unit 21",
+        title: "Age of Revolutions",
+        tags: ["hot","key"],
+        topics: [
+          "American Revolution (1776) — Declaration of Independence, influence on democratic thought",
+          "French Revolution (1789) — Liberty, Equality, Fraternity; Reign of Terror; Napoleon Bonaparte",
+          "Industrial Revolution (Britain, 18th–19th c.) — capitalism, urbanisation, class struggle"
+        ]
+      },
+      {
+        num: "Unit 22",
+        title: "World Wars & Their Global Impact",
+        tags: ["hot","geo"],
+        topics: [
+          "World War I (1914–18) — assassination of Archduke Franz Ferdinand, Triple Alliance vs Entente, Treaty of Versailles",
+          "Rise of Fascism & Nazism — Mussolini (Italy), Hitler (Germany), causes of WW2",
+          "World War II (1939–45) — key theatres, Holocaust, atomic bombs on Hiroshima & Nagasaki",
+          "Formation of the United Nations (1945) — permanent members, key agencies"
+        ]
+      },
+      {
+        num: "Unit 23",
+        title: "Russian Revolution & Cold War Origins",
+        tags: ["key","fig"],
+        topics: [
+          "Russian Revolution (1917) — Tsar Nicholas II, Bolsheviks, Lenin, October Revolution",
+          "Rise of USSR — Stalin's five-year plans, collectivisation",
+          "Cold War (1947–91) — USA vs USSR, NATO vs Warsaw Pact, Berlin Wall, Cuban Missile Crisis"
+        ]
+      }
+    ]
+  }
+];
+
+const tagMap = {
+  hot: { cls: "tag-hot", icon: "ti-flame", label: "Exam hot" },
+  key: { cls: "tag-key", icon: "ti-key", label: "Conceptual" },
+  geo: { cls: "tag-geo", icon: "ti-map-pin", label: "Geography" },
+  fig: { cls: "tag-fig", icon: "ti-user-star", label: "Key figures" }
+};
+
+let expanded = new Set();
+let allExpanded = false;
+
+function toggleAll() {
+  const btn = document.querySelector('.expand-all');
+  if (allExpanded) {
+    expanded.clear();
+    btn.textContent = 'Expand all';
+  } else {
+    data.forEach((e,i) => expanded.add(i));
+    btn.textContent = 'Collapse all';
+  }
+  allExpanded = !allExpanded;
+  render();
+}
+
+function toggle(i) {
+  if (expanded.has(i)) expanded.delete(i);
+  else expanded.add(i);
+  updateProgress();
+  render();
+}
+
+function updateProgress() {
+  const total = data.length;
+  const pct = total ? Math.round((expanded.size / total) * 100) : 0;
+  document.getElementById('prog').style.width = pct + '%';
+}
+
+function render() {
+  const container = document.getElementById('syllabus');
+  container.innerHTML = '';
+  data.forEach((era, i) => {
+    const isOpen = expanded.has(i);
+    const block = document.createElement('div');
+    block.className = 'era-block';
+
+    const header = document.createElement('div');
+    header.className = 'era-header' + (isOpen ? ' open' : '');
+    header.onclick = () => { toggle(i); };
+
+    header.innerHTML = `
+      <span class="era-badge ${era.badge}">${era.era.split(' ')[0]}</span>
+      <span class="era-title">${era.era}</span>
+      <span class="era-years">${era.years}</span>
+      <i class="ti ti-chevron-down chevron" aria-hidden="true"></i>
+    `;
+
+    const body = document.createElement('div');
+    body.className = 'era-body' + (isOpen ? ' open' : '');
+
+    era.units.forEach(u => {
+      const unit = document.createElement('div');
+      unit.className = 'unit';
+      const tagHtml = (u.tags || []).map(t => {
+        const m = tagMap[t];
+        return `<span class="tag ${m.cls}"><i class="ti ${m.icon}" style="font-size:11px" aria-hidden="true"></i>${m.label}</span>`;
+      }).join('');
+      const liHtml = u.topics.map(t => `<li>${t}</li>`).join('');
+      unit.innerHTML = `
+        <div class="unit-num">${u.num}</div>
+        <div class="unit-title">${u.title}</div>
+        <ul class="topics">${liHtml}</ul>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;">${tagHtml}</div>
+      `;
+      body.appendChild(unit);
+    });
+
+    block.appendChild(header);
+    block.appendChild(body);
+    container.appendChild(block);
+  });
+  updateProgress();
+}
+
+render();
+</script>
